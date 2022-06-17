@@ -1,9 +1,11 @@
-# Yolo-based-mask-recognition-algorithm
-基于Yolo的口罩识别算法研究与实现
- 
-![img](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image001.gif)
+# Yolo-based-mask-recognition-algorithm 
+ 基于Yolo的口罩识别算法研究与实现
 
-​                        图1 基于YOLOv5的口罩识别实现流程
+<div align=center>
+<img src="Pictures/1.png"/>
+ 
+ 图1 基于YOLOv5的口罩识别实现流程
+ </div>                    
 
 图1是基于YOLOv5实现本次毕业设计目标——实时检测人脸佩戴口罩情况的实现流程图。
 
@@ -19,9 +21,12 @@
 
 本次毕业设计所用的数据集是来自AIZOO的开源数据集，原数据集大小为776MB，其中，训练集包含6120张图片，验证集包含1839张图片，图片已经经过标注。标注格式为VOC格式,即每个数据集都有两个文件夹，images文件夹中存放图片，labels文件夹中存放与images文件夹中图片一一对应的同名标注文本文件。如图4.2数据集文件的例子所示，其中每行第一个数字为是否佩戴口罩，佩戴口罩取1，未佩戴口罩取0；第二和第三个数字为目标边界框的中心横纵坐标；第四和第五个数字表示目标边界框的宽和高。如本文3.2.1中提到的，这里的坐标也根据图片尺度进行了处理。
 
-![img](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image003.jpg)
-
+<div align=center>
+<img src="Pictures/2.png"/>
+ 
 图2 数据集文件
+ </div>  
+
 
 为了避免错误的图片和数量过多的单一类型图片，在实验开始前对数据集进行了手工筛选，最终使用留出法进行划分，即让各个数据集中没有重复部分。整理得到的数据集为：2000张图片的训练集，300张图片的验证集，300张图片的测试集。
 
@@ -58,28 +63,41 @@
 新建训练配置文件data.yaml，写入训练集与验证集图像文件所在的images文件夹地址路径，修改nc即类别数为2，类名为no-mask和mask对应数据集中的0和1。
 
 训练涉及的所有参数如图4.3的代码截图所示。包括weight权重文件，借此可以设置迁移学习的基础权重；cfg用于选择模型文件；data设置数据集的路径；epoch即训练的迭代轮数；batch-size为训练批次大小，也相当于更新权重文件的步长；img-size是图像缩放后的分辨率大小。
-
-![文本  描述已自动生成](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image005.jpg)
-
+<div align=center>
+<img src="Pictures/3.png"/>
+ 
 图3 YOLOv5可自定义参数
+ </div>  
 
-本次训练设置训练迭代次数epoch为300次，batch-size为64，图像大小为![img](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image007.gif)，其他参数保留默认值。由于完整的重新训练耗时较长，本次训练采用迁移训练的方式，基于YOLOv5官方发布的yolov5s模型进行迁移训练。训练命令如图4.4截图所示。
 
-![img](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image009.jpg)
+本次训练设置训练迭代次数epoch为300次，batch-size为64，图像大小为640x640，其他参数保留默认值。由于完整的重新训练耗时较长，本次训练采用迁移训练的方式，基于YOLOv5官方发布的yolov5s模型进行迁移训练。训练命令如图4.4截图所示。
 
+<div align=center>
+<img src="Pictures/4.png"/>
+ 
 图4 开始训练代码
+ </div>  
+
+
 
 在将数据集加载进显存后，YOLOv5将针对输入的训练集自动完成自适应锚定边界框的选取，训练过程输出如图5训练过程的输出图所示，占用大约11.5GB的显存，一次迭代大约需要一分钟。
 
-![img](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image011.jpg)
-
+<div align=center>
+<img src="Pictures/5.png"/>
+ 
 图5 训练过程的输出
+ </div>  
+
 
 训练耗时5.781小时，随着迭代次数增长，各个损失函数的指标不断的更新优化。最终，如图4.6的PR曲线和表4.1所示，在验证集上获得了91.4%的mAP，其中，对未佩戴口罩识别正确率为85.8%，对已佩戴口罩识别的正确率为97.1%。
 
-![图片包含 图表  描述已自动生成](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image013.gif)
 
+<div align=center>
+<img src="Pictures/6.png"/>
+ 
 图6 PR曲线
+ </div>  
+
 
 表1 完成训练的模型在验证集上的测试结果
 
@@ -95,13 +113,19 @@
 
 测试中存在检测将background识别为人脸并进行口罩佩戴识别的情况，可能是yolov5更擅长检测大目标，针对单一种类的人脸这样较小的目标定位能力较差。
 
-![img](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image015.gif)
-
+<div align=center>
+<img src="Pictures/7.png"/>
+ 
 图7 混淆矩阵
+ </div>  
 
-![img](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image017.gif)
 
+<div align=center>
+<img src="Pictures/8.png"/>
+ 
 图8 训练结果
+ </div> 
+
 
 如图8所示，迭代次数超过200时mAP基本已经稳定，损失函数也在逼近0，但验证集上关于目标位置的误差还是较大，这也符合上文对YOLOv5针对小目标定位性能较差的猜测。分类误差很低，说明人脸是否佩戴口罩的特征较为明显，针对定位到的人脸进行判断比较容易。
 
@@ -117,19 +141,27 @@
 
 本地的硬件平台不同于训练所用的云端平台，需要自行配置许多运行环境。首先下载yolov5官网提供的Pytorch框架下实现源码，然后再NVIDIA官网下载硬件加速驱动CUDA10.2，接着在Pytorch官网根据自己的操作系统与算法语言获取相关依赖库版本，如图4.9所示。选择Windows和Python，选择通过pip方式安装，选择CUDA版本，就能获得依赖库的配置命令，在终端中输入命令进行配置。完成配置后就能在本地使用YOLO的全部功能。
 
-![img](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image019.jpg)
-
+<div align=center>
+<img src="Pictures/9.png"/>
+ 
 图9 获取依赖库安装命令
+ </div> 
 
-主要测试模型对批量图片、视频的处理能力。由图10和图11所示，能够实时的检测出人类并对是否佩戴口罩进行较为可靠的判断，检测的速度约为20FPS，针对摄像头采集的数据，降低分辨率至![img](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image021.gif)能够达到接近60FPS。
 
-![img](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image023.jpg)
+主要测试模型对批量图片、视频的处理能力。由图10和图11所示，能够实时的检测出人类并对是否佩戴口罩进行较为可靠的判断，检测的速度约为20FPS，针对摄像头采集的数据，降低分辨率至128x96能够达到接近60FPS。
+
+<div align=center>
+<img src="Pictures/10.png"/>
 
 图10 视频测试截图
+ </div> 
 
-![img](file:///C:/Users/hpf19/AppData/Local/Temp/msohtmlclip1/01/clip_image025.jpg)
+
+<div align=center>
+<img src="Pictures/11.jpg"/>
 
 图11 图片测试
+ </div> 
 
 从上图9可以看出，此次检测针对是否佩戴口罩的分类判断较为准确，置信度也都比较高，但对同一图像内的多个目标定位还不足，部分图像内的人脸没有被检测到，也就没有进行是否佩戴口罩的识别。推测是数据集中缺少人脸侧面图像数据，网络未能在训练中具备定位人侧脸的能力。
 
